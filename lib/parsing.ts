@@ -46,7 +46,7 @@ async function extractFromDocx(filePath: string) {
   return value.trim();
 }
 
-async function extractFromDoc(filePath: string) {
+async function extractWithTextract(filePath: string) {
   return new Promise<string>((resolve, reject) => {
     textract.fromFileWithPath(filePath, (error, text) => {
       if (error) {
@@ -59,6 +59,10 @@ async function extractFromDoc(filePath: string) {
 }
 
 async function extractFromPptx(filePath: string) {
+  if (extractFileType(filePath) === "ppt") {
+    return extractWithTextract(filePath);
+  }
+
   const slides = await readPptxFile(filePath);
   const text = slides
     .map((slide) =>

@@ -62,7 +62,7 @@ model Question {
   quiz      Quiz           @relation(fields: [quizId], references: [id])
   quizId    String
   text      String
-  "order"   Int
+  order     Int
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
   options   AnswerOption[]
