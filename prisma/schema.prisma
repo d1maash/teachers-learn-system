@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DocumentStatus {
+  UPLOADED
+  PROCESSING
+  READY
+  ERROR
+}
+
+enum FileType {
+  PDF
+  PPT
+  PPTX
+  DOC
+  DOCX
+  OTHER
+}
+
+model Teacher {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  documents    Document[]
+}
+
+model Document {
+  id              String         @id @default(uuid())
+  teacher         Teacher        @relation(fields: [teacherId], references: [id])
+  teacherId       String
+  title           String
+  originalFileName String
+  fileType        FileType
+  storagePath     String
+  status          DocumentStatus @default(UPLOADED)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  quiz            Quiz?
+}
+
+model Quiz {
+  id         String     @id @default(uuid())
+  document   Document   @relation(fields: [documentId], references: [id])
+  documentId String     @unique
+  title      String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  questions  Question[]
+}
+
+model Question {
+  id        String         @id @default(uuid())
+  quiz      Quiz           @relation(fields: [quizId], references: [id])
+  quizId    String
+  text      String
+  "order"   Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  options   AnswerOption[]
+}
+
+model AnswerOption {
+  id         String   @id @default(uuid())
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+}
+
