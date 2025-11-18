@@ -1,9 +1,10 @@
-\"use client\";
+"use client";
 
-import { useMemo, useState } from \"react\";
-import Link from \"next/link\";
-import { Button } from \"@/components/ui/button\";
-import { cn } from \"@/lib/utils\";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type QuizQuestion = {
   id: string;
@@ -63,62 +64,63 @@ export function QuizPreview({ quiz }: Props) {
   const totalQuestions = quiz.questions.length;
 
   return (
-    <div className=\"space-y-10\">
-      <div className=\"rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 p-8 text-white shadow-2xl\">
-        <div className=\"flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between\">
+    <div className="space-y-8">
+      <Card className="border border-foreground/10 bg-background text-foreground">
+        <CardHeader className="gap-6 sm:flex sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className=\"text-sm uppercase tracking-[0.35em] text-white/60\">Викторина</p>
-            <h1 className=\"mt-2 text-4xl font-light leading-tight sm:text-5xl\">{quiz.title}</h1>
+            <p className="text-xs uppercase tracking-[0.4em] text-foreground/50">Викторина</p>
+            <CardTitle className="mt-2 text-3xl font-light">{quiz.title}</CardTitle>
           </div>
-          <Button asChild variant=\"outline\" className=\"border-white/30 text-white hover:bg-white/10\">
-            <Link href={`/quizzes/${quiz.id}/present`}>Режим презентации</Link>
-          </Button>
-        </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="ghost">
+              <Link href="/">Главное меню</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/quizzes/${quiz.id}/present`}>Режим презентации</Link>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Stat label="Всего вопросов" value={totalQuestions} />
+            <Stat label="Отвечено" value={answeredCount} />
+            <Stat label="Результат" value={showResults ? `${score}/${totalQuestions}` : "—"} />
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={handleShowResults} disabled={answeredCount !== totalQuestions}>
+              Показать результаты
+            </Button>
+            <Button variant="ghost" onClick={handleReset}>
+              Сбросить
+            </Button>
+          </div>
+          {answeredCount !== totalQuestions && (
+            <p className="text-sm text-foreground/60">
+              Ответь на все вопросы, чтобы увидеть правильные ответы.
+            </p>
+          )}
+          {showResults && (
+            <p className="text-sm text-foreground">
+              Правильных ответов: {score} из {totalQuestions}.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
-        <div className=\"mt-8 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-3\">
-          <Stat label=\"Всего вопросов\" value={totalQuestions} />
-          <Stat label=\"Отвечено\" value={answeredCount} />
-          <Stat label=\"Результат\" value={showResults ? `${score}/${totalQuestions}` : \"—\"} />
-        </div>
-
-        <div className=\"mt-6 flex flex-wrap gap-3\">
-          <Button
-            onClick={handleShowResults}
-            disabled={answeredCount !== totalQuestions}
-            className=\"bg-white text-indigo-900 hover:opacity-90 disabled:bg-white/40 disabled:text-white/70\"
-          >
-            Показать результаты
-          </Button>
-          <Button variant=\"ghost\" onClick={handleReset} className=\"text-white hover:bg-white/10\">
-            Сбросить
-          </Button>
-        </div>
-        {answeredCount !== totalQuestions && (
-          <p className=\"mt-2 text-sm text-white/60\">
-            Ответь на все вопросы, чтобы увидеть правильные ответы.
-          </p>
-        )}
-        {showResults && (
-          <p className=\"mt-2 text-sm text-emerald-300\">
-            Отлично! Ты правильно ответил на {score} из {totalQuestions}.
-          </p>
-        )}
-      </div>
-
-      <ol className=\"space-y-8\">
+      <ol className="space-y-6">
         {quiz.questions.map((question) => (
-          <li key={question.id} className=\"space-y-4 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-lg\">
-            <div className=\"flex items-start gap-4\">
-              <div className=\"flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 text-base font-semibold text-foreground\">
-                {question.order}
-              </div>
-              <div>
-                <p className=\"text-xs uppercase tracking-[0.4em] text-muted-foreground\">Вопрос</p>
-                <h3 className=\"mt-1 text-2xl font-semibold text-foreground/90\">{question.text}</h3>
-              </div>
-            </div>
-
-            <div className=\"mt-4 grid gap-3 sm:grid-cols-2\">
+          <li key={question.id}>
+            <Card className="border border-foreground/10 bg-card text-foreground">
+              <CardHeader className="flex-row items-start gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/20 text-sm font-semibold">
+                  {question.order}
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.4em] text-foreground/50">Вопрос</p>
+                  <CardTitle className="mt-1 text-xl font-medium">{question.text}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="grid gap-2 sm:grid-cols-2">
               {question.options.map((option, index) => {
                 const optionLetter = String.fromCharCode(65 + index);
                 const isSelected = selected[question.id] === option.id;
@@ -129,43 +131,40 @@ export function QuizPreview({ quiz }: Props) {
                 return (
                   <button
                     key={option.id}
-                    type=\"button\"
+                    type="button"
                     onClick={() => handleSelect(question.id, option.id)}
                     className={cn(
-                      \"group flex items-start gap-4 rounded-2xl border px-5 py-4 text-left text-base transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40\",
+                      "group flex items-start gap-3 rounded-2xl border border-foreground/15 px-4 py-3 text-left text-sm transition",
                       {
-                        \"border-emerald-400 bg-emerald-50 text-emerald-900\":
-                          isRevealedCorrect,
-                        \"border-rose-400 bg-rose-50 text-rose-900\": isRevealedWrong,
-                        \"border-foreground bg-foreground text-background shadow-lg\":
-                          !showResults && isSelected,
-                        \"border-border bg-background/80 hover:border-foreground/60 hover:bg-foreground/5\":
-                          !isSelected && !showResults,
-                        \"border-border/80 bg-background/60\":
-                          showResults && !isSelected && !isCorrect
+                        "border-green-500 bg-green-50 text-foreground": isRevealedCorrect,
+                        "border-red-500 bg-red-50 text-foreground": isRevealedWrong,
+                        "border-foreground bg-foreground text-background": !showResults && isSelected,
+                        "hover:border-foreground/40": !isSelected && !showResults,
+                        "opacity-60": showResults && !isSelected && !isCorrect
                       }
                     )}
                     aria-pressed={isSelected}
                   >
                     <span
                       className={cn(
-                        \"flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border text-sm font-semibold transition-all\",
+                        "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border text-xs font-semibold transition",
                         isRevealedCorrect
-                          ? \"border-emerald-500 bg-emerald-500/10 text-emerald-900\"
+                          ? "border-green-500 text-green-700"
                           : isRevealedWrong
-                            ? \"border-rose-500 bg-rose-500/10 text-rose-900\"
+                            ? "border-red-500 text-red-700"
                             : isSelected
-                              ? \"border-transparent bg-background text-foreground\"
-                              : \"border-border text-foreground/70\"
+                              ? "border-background bg-background text-foreground"
+                              : "border-foreground/30 text-foreground/60"
                       )}
                     >
                       {optionLetter}
                     </span>
-                    <span className=\"text-lg leading-relaxed\">{option.text}</span>
+                    <span className="text-base leading-relaxed">{option.text}</span>
                   </button>
                 );
               })}
-            </div>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ol>
@@ -175,9 +174,9 @@ export function QuizPreview({ quiz }: Props) {
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className=\"rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center\">
-      <p className=\"text-xs uppercase tracking-[0.4em] text-white/60\">{label}</p>
-      <p className=\"mt-1 text-2xl font-semibold text-white\">{value}</p>
+    <div className="rounded-2xl border border-foreground/10 bg-background px-4 py-3 text-center">
+      <p className="text-xs uppercase tracking-[0.4em] text-foreground/50">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
     </div>
   );
 }
