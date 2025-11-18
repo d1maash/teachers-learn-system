@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,19 @@ export function PresentationView({ quiz }: Props) {
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
+      <div className="relative flex items-center justify-center border-b border-border px-10 py-6">
+        <Button
+          asChild
+          variant="outline"
+          className="absolute left-6 top-1/2 -translate-y-1/2 rounded-full border-foreground/20 text-xs uppercase tracking-[0.3em]"
+        >
+          <Link href="/">Главное меню</Link>
+        </Button>
+        <span className="text-sm uppercase tracking-[0.4em] text-foreground/60">{quiz.title}</span>
+        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs text-foreground/50">
+          {index + 1}/{quiz.questions.length}
+        </span>
+      </div>
       <div className="flex-1 px-16 py-12 space-y-12">
         <div>
           <p className="text-sm uppercase tracking-[0.4em] text-foreground/40">
@@ -58,7 +72,9 @@ export function PresentationView({ quiz }: Props) {
         <Button variant="outline" onClick={prev} disabled={index === 0}>
           Назад
         </Button>
-        <span className="text-sm text-foreground/60">{quiz.title}</span>
+        <Button asChild variant="ghost">
+          <Link href="/">Главное меню</Link>
+        </Button>
         <Button onClick={next} disabled={index === quiz.questions.length - 1}>
           Далее
         </Button>

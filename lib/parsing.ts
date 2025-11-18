@@ -2,7 +2,6 @@ import fs from "fs/promises";
 import path from "path";
 import mammoth from "mammoth";
 import pdfParse from "pdf-parse";
-import { readPptxFile } from "pptx-parser";
 import textract from "textract";
 
 const SUPPORTED_TYPES = ["pdf", "ppt", "pptx", "doc", "docx"];
@@ -26,9 +25,8 @@ export async function extractTextFromFile(filePath: string): Promise<string> {
     case "doc":
       return extractWithTextract(filePath);
     case "ppt":
-      return extractWithTextract(filePath);
     case "pptx":
-      return extractFromPptx(filePath);
+      return extractWithTextract(filePath);
     default:
       throw new Error("Неизвестный тип файла");
   }
@@ -56,24 +54,5 @@ async function extractWithTextract(filePath: string) {
       }
     });
   });
-}
-
-async function extractFromPptx(filePath: string) {
-  if (extractFileType(filePath) === "ppt") {
-    return extractWithTextract(filePath);
-  }
-
-  const slides = await readPptxFile(filePath);
-  const text = slides
-    .map((slide) =>
-      slide.elements
-        ?.map((element) => ("text" in element ? element.text : ""))
-        .filter(Boolean)
-        .join("\n")
-    )
-    .filter(Boolean)
-    .join("\n\n");
-
-  return text.trim();
 }
 
