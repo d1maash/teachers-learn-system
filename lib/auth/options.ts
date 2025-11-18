@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { loginSchema } from "./validators";
 
 export const authConfig: NextAuthConfig = {
+  secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt"
   },

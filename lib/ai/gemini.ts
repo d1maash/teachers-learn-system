@@ -30,18 +30,21 @@ export class GeminiQuizGenerator implements QuizGenerator {
 
     const trimmed = text.length > 12000 ? text.slice(0, 12000) : text;
 
-    const model = this.client.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+    const model = this.client.getGenerativeModel({ model: modelName });
 
-    const result = await model.generateContent([
-      {
-        role: "user",
-        parts: [
-          {
-            text: `${SYSTEM_PROMPT}\n\nКонтент:\n${trimmed}`
-          }
-        ]
-      }
-    ]);
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `${SYSTEM_PROMPT}\n\nКонтент:\n${trimmed}`
+            }
+          ]
+        }
+      ]
+    });
 
     const response = await result.response;
     const responseText = response.text().trim();
@@ -50,10 +53,15 @@ export class GeminiQuizGenerator implements QuizGenerator {
       throw new Error("Пустой ответ от Gemini");
     }
 
+    const jsonPayload = extractJsonPayload(responseText);
+    if (!jsonPayload) {
+      throw new Error("Не удалось извлечь JSON из ответа Gemini");
+    }
+
     let parsed: GeneratedQuiz;
 
     try {
-      parsed = JSON.parse(responseText);
+      parsed = JSON.parse(jsonPayload);
     } catch (error) {
       throw new Error("Не удалось разобрать JSON от Gemini");
     }
@@ -76,4 +84,20 @@ export class GeminiQuizGenerator implements QuizGenerator {
     return parsed;
   }
 }
+
+function extractJsonPayload(text: string): string | null {
+  const fencedMatch = text.match(/```(?:json)?([\s\S]*?)```/i);
+  if (fencedMatch) {
+    return fencedMatch[1].trim();
+  }
+
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return text.slice(firstBrace, lastBrace + 1).trim();
+  }
+
+  return null;
+}
+
 
