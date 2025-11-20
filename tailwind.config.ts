@@ -11,15 +11,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        border: "rgba(0,0,0,0.1)",
-        background: "#FFFFFF",
-        foreground: "#000000"
+        border: "rgba(15,23,42,0.08)",
+        "border-strong": "rgba(15,23,42,0.16)",
+        background: "#F7F6F2",
+        "background-secondary": "#F2F0EA",
+        foreground: "#0F172A",
+        muted: "#E5E2DB",
+        "muted-foreground": "#5F6472",
+        card: "#FFFFFF",
+        "card-foreground": "#0F172A",
+        accent: "#111827",
+        "accent-foreground": "#F8FAFC",
+        ring: "#111827"
       },
       fontFamily: {
         sans: ["'Inter'", "ui-sans-serif", "system-ui"]
       },
       boxShadow: {
-        card: "0 10px 30px rgba(0,0,0,0.05)"
+        card: "0 25px 60px rgba(15,23,42,0.08)"
       }
     }
   },

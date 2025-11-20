@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,8 +36,24 @@ export function RegisterForm() {
       return;
     }
 
-    toast({ title: "Регистрация успешна", description: "Можно войти" });
-    router.push("/auth/login");
+    toast({ title: "Аккаунт создан", description: "Заполните короткую анкету" });
+
+    const loginResult = await signIn("credentials", {
+      email,
+      password,
+      redirect: false
+    });
+
+    if (loginResult?.error) {
+      toast({
+        title: "Не удалось авторизоваться автоматически",
+        description: "Войдите с только что созданными данными"
+      });
+      router.push("/auth/login");
+      return;
+    }
+
+    router.push("/onboarding");
   };
 
   return (

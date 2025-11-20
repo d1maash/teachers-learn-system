@@ -51,6 +51,9 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+        if (token.name) {
+          session.user.name = token.name as string;
+        }
       }
       return session;
     }
