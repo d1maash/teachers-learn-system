@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth/session";
 import { QuizPreview } from "@/components/quiz/quiz-preview";
@@ -11,6 +11,15 @@ export default async function QuizPage({ params }: Params) {
   const session = await auth();
   if (!session?.user?.id) {
     notFound();
+  }
+
+  const teacher = await prisma.teacher.findUnique({
+    where: { id: session.user.id },
+    select: { profileCompleted: true }
+  });
+
+  if (!teacher?.profileCompleted) {
+    redirect("/onboarding");
   }
 
   const quiz = await prisma.quiz.findFirst({

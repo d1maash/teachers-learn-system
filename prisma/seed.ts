@@ -27,7 +27,13 @@ async function main() {
     data: {
       email,
       passwordHash: hash,
-      name: "Demo Teacher"
+      name: "Demo Teacher",
+      subjects: "Алгебра и геометрия",
+      university: "Demo University",
+      city: "Москва",
+      heardAboutUs: "search",
+      profileCompleted: true,
+      profileCompletedAt: new Date()
     }
   });
 

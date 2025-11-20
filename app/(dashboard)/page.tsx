@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth/session";
 import { UploadCTA } from "@/components/dashboard/upload-cta";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    return null;
+    redirect("/auth/login");
   }
 
   const documents = await prisma.document.findMany({

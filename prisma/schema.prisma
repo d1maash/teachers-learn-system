@@ -28,6 +28,17 @@ model Teacher {
   email        String     @unique
   name         String?
   passwordHash String
+  phone        String?
+  telegram     String?
+  subjects     String?
+  university   String?
+  department   String?
+  city         String?
+  heardAboutUs String?
+  heardDetails String?
+  goals        String?
+  profileCompleted Boolean @default(false)
+  profileCompletedAt DateTime?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   documents    Document[]
